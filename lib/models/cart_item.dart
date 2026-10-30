@@ -1,12 +1,15 @@
 import 'drink.dart';
 
 class CartItem {
-  const CartItem({
+  CartItem({
     required this.drink,
     this.size = 'M',
     this.milk = 'Whole',
     this.syrup = 'None',
-  });
+  }) : id = 'cart-${_nextId++}';
+
+  static int _nextId = 0;
+  final String id;
 
   final Drink drink;
   final String size;

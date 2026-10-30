@@ -71,61 +71,57 @@ class _RootScreenState extends State<RootScreen> {
 
   void openCart() => Navigator.of(context).push(
     MaterialPageRoute(
-      builder: (cartContext) => StatefulBuilder(
-        builder: (context, refreshCart) => CartScreen(
-          items: List.unmodifiable(cart),
-          stamps: stamps,
-          navigationBar: buildNavigationBar((value) {
-            setState(() => tab = value);
-            Navigator.of(cartContext).pop();
-          }),
-          onRemove: (item) {
-            setState(() => cart.remove(item));
-            refreshCart(() {});
-          },
-          onClear: () {
-            setState(() => cart.clear());
-            refreshCart(() {});
-          },
-          onCheckout: () {
-            if (cart.isEmpty) return;
-            final redeem = stamps >= 10;
-            final discount = redeem
-                ? cart.map((item) => item.price).reduce((a, b) => a < b ? a : b)
-                : 0.0;
-            final order = CoffeeOrder(
-              number: orders.length + 1,
-              items: cart,
-              discount: discount,
-            );
-            setState(() {
-              orders.add(order);
-              stamps =
-                  ((redeem ? stamps - 10 : stamps) +
-                          cart.length -
-                          (redeem ? 1 : 0))
-                      .clamp(0, 10);
-              cart.clear();
-              tab = 0;
-            });
-            Navigator.of(cartContext).pop();
-            showDialog<void>(
-              context: this.context,
-              builder: (context) => AlertDialog(
-                title: Text('Order #${order.number} confirmed'),
-                content: Text(
-                  '${order.items.length} drinks • ₸${order.total.toStringAsFixed(0)}\n${order.discount > 0 ? 'Reward applied: ₸${order.discount.toStringAsFixed(0)}\n' : ''}Stamps: $stamps/10',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text('Done'),
-                  ),
-                ],
+      builder: (cartContext) => CartScreen(
+        items: cart,
+        stamps: stamps,
+        navigationBar: buildNavigationBar((value) {
+          setState(() => tab = value);
+          Navigator.of(cartContext).pop();
+        }),
+        onItemsChanged: (items) {
+          setState(() {
+            cart.clear();
+            cart.addAll(items);
+          });
+        },
+        onCheckout: () {
+          if (cart.isEmpty) return;
+          final redeem = stamps >= 10;
+          final discount = redeem
+              ? cart.map((item) => item.price).reduce((a, b) => a < b ? a : b)
+              : 0.0;
+          final order = CoffeeOrder(
+            number: orders.length + 1,
+            items: cart,
+            discount: discount,
+          );
+          setState(() {
+            orders.add(order);
+            stamps =
+                ((redeem ? stamps - 10 : stamps) +
+                        cart.length -
+                        (redeem ? 1 : 0))
+                    .clamp(0, 10);
+            cart.clear();
+            tab = 0;
+          });
+          Navigator.of(cartContext).pop();
+          showDialog<void>(
+            context: context,
+            builder: (context) => AlertDialog(
+              title: Text('Order #${order.number} confirmed'),
+              content: Text(
+                '${order.items.length} drinks • ₸${order.total.toStringAsFixed(0)}\n${order.discount > 0 ? 'Reward applied: ₸${order.discount.toStringAsFixed(0)}\n' : ''}Stamps: $stamps/10',
               ),
-            );
-          },
-        ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('Done'),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     ),
   );
@@ -154,7 +150,7 @@ class _RootScreenState extends State<RootScreen> {
     ];
     return Scaffold(
       body: IndexedStack(index: tab, children: screens),
-      floatingActionButton: cart.isNotEmpty && tab == 0
+      floatingActionButton: tab == 0
           ? FloatingActionButton.extended(
               tooltip: 'Open cart',
               onPressed: openCart,
