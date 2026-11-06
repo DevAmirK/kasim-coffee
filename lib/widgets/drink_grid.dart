@@ -24,7 +24,7 @@ class DrinkGrid extends StatelessWidget {
             crossAxisCount: 2,
             crossAxisSpacing: 12,
             mainAxisSpacing: 12,
-            mainAxisExtent: (width - 12) / 2 + 130 * scale,
+            mainAxisExtent: (width - 12) / 2 + 105 * scale,
           ),
           delegate: SliverChildBuilderDelegate(
             (context, index) => DrinkCard(

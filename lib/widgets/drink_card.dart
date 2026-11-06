@@ -1,6 +1,9 @@
+import '../utils/format_price.dart';
+
 import 'package:flutter/material.dart';
 
 import '../models/drink.dart';
+
 import '../models/cart_item.dart';
 import 'drink_image.dart';
 
@@ -41,7 +44,7 @@ class DrinkCard extends StatelessWidget {
               ),
               onPressed: onTap,
               child: Text(
-                'From ₸${CartItem(drink: drink, size: 'S').price.toStringAsFixed(0)}',
+                'from ${formatPrice(CartItem(drink: drink, size: 'S').price)} ₸',
                 textAlign: TextAlign.center,
               ),
             ),

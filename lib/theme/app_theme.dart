@@ -34,6 +34,11 @@ class AppTheme {
         headlineSmall: TextStyle(color: graphite),
         headlineMedium: TextStyle(color: graphite),
       ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+        ),
+      ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(foregroundColor: graphite),
       ),

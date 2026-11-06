@@ -29,6 +29,7 @@ class _MenuScreenState extends State<MenuScreen> {
   @override
   Widget build(BuildContext context) {
     final drinks = mockDrinks
+        .take(6)
         .where(
           (drink) =>
               (category == 'All' || drink.category == category) &&

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'providers/cart_provider.dart';
 
 import 'screens/login_screen.dart';
 import 'theme/app_theme.dart';
@@ -12,11 +15,14 @@ class KasimCoffeeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Kasim Coffee',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      home: const LoginScreen(),
+    return ChangeNotifierProvider(
+      create: (_) => CartProvider(),
+      child: MaterialApp(
+        title: 'Kasim Coffee',
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.light,
+        home: const LoginScreen(),
+      ),
     );
   }
 }

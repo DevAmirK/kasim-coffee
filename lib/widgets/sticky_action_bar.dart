@@ -1,3 +1,5 @@
+import '../utils/format_price.dart';
+
 import 'package:flutter/material.dart';
 
 class StickyActionBar extends StatelessWidget {
@@ -23,7 +25,7 @@ class StickyActionBar extends StatelessWidget {
                 onPressed: onPressed,
                 key: const ValueKey('add-configured-drink'),
                 icon: const Icon(Icons.add),
-                label: Text('₸${price.toStringAsFixed(0)}'),
+                label: Text('₸${formatPrice(price)}'),
               ),
             ),
           ],

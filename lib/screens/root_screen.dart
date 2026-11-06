@@ -1,8 +1,13 @@
+import '../utils/format_price.dart';
+
 import 'package:flutter/material.dart';
 
 import '../data/mock_drinks.dart';
 import '../models/drink.dart';
-import '../models/cart_item.dart';
+
+import 'package:provider/provider.dart';
+
+import '../providers/cart_provider.dart';
 import '../models/coffee_order.dart';
 import '../models/user.dart';
 import 'cart_screen.dart';
@@ -23,7 +28,8 @@ class _RootScreenState extends State<RootScreen> {
   int tab = 0;
   final favorites = <String>{};
   final ratings = <String, double>{};
-  final cart = <CartItem>[];
+  CartProvider get cartProvider => context.read<CartProvider>();
+
   final orders = <CoffeeOrder>[];
   int stamps = 0;
 
@@ -60,7 +66,7 @@ class _RootScreenState extends State<RootScreen> {
         onRatingCleared: () => clearRating(drink),
         onAddToCart: (item) {
           setState(() {
-            cart.add(item);
+            cartProvider.add(item);
             tab = 0;
           });
           Navigator.pop(context, true);
@@ -72,19 +78,13 @@ class _RootScreenState extends State<RootScreen> {
   void openCart() => Navigator.of(context).push(
     MaterialPageRoute(
       builder: (cartContext) => CartScreen(
-        items: cart,
         stamps: stamps,
         navigationBar: buildNavigationBar((value) {
           setState(() => tab = value);
           Navigator.of(cartContext).pop();
         }),
-        onItemsChanged: (items) {
-          setState(() {
-            cart.clear();
-            cart.addAll(items);
-          });
-        },
         onCheckout: () {
+          final cart = cartProvider.items;
           if (cart.isEmpty) return;
           final redeem = stamps >= 10;
           final discount = redeem
@@ -102,7 +102,7 @@ class _RootScreenState extends State<RootScreen> {
                         cart.length -
                         (redeem ? 1 : 0))
                     .clamp(0, 10);
-            cart.clear();
+            cartProvider.clear();
             tab = 0;
           });
           Navigator.of(cartContext).pop();
@@ -111,7 +111,7 @@ class _RootScreenState extends State<RootScreen> {
             builder: (context) => AlertDialog(
               title: Text('Order #${order.number} confirmed'),
               content: Text(
-                '${order.items.length} drinks • ₸${order.total.toStringAsFixed(0)}\n${order.discount > 0 ? 'Reward applied: ₸${order.discount.toStringAsFixed(0)}\n' : ''}Stamps: $stamps/10',
+                '${order.items.length} drinks • ₸${formatPrice(order.total)}\n${order.discount > 0 ? 'Reward applied: ₸${formatPrice(order.discount)}\n' : ''}Stamps: $stamps/10',
               ),
               actions: [
                 TextButton(
@@ -128,6 +128,7 @@ class _RootScreenState extends State<RootScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final cart = context.watch<CartProvider>();
     final screens = [
       MenuScreen(onDrinkTap: openDrink),
       FavoritesScreen(
@@ -142,13 +143,29 @@ class _RootScreenState extends State<RootScreen> {
         favoritesCount: favorites.length,
         ratingsGiven: ratings.length,
         onReset: reset,
-        onLogout: () => Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (_) => const LoginScreen()),
-          (_) => false,
-        ),
+        onLogout: () {
+          cartProvider.clear();
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (_) => const LoginScreen()),
+            (_) => false,
+          );
+        },
       ),
     ];
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Kasim Coffee"),
+        actions: [
+          IconButton(
+            tooltip: "Open cart",
+            onPressed: openCart,
+            icon: Badge(
+              label: Text("${cart.itemCount}"),
+              child: const Icon(Icons.shopping_bag_outlined),
+            ),
+          ),
+        ],
+      ),
       body: IndexedStack(index: tab, children: screens),
       floatingActionButton: tab == 0
           ? FloatingActionButton.extended(
@@ -158,9 +175,7 @@ class _RootScreenState extends State<RootScreen> {
               foregroundColor: Theme.of(context).colorScheme.onPrimary,
               shape: const StadiumBorder(),
               icon: const Icon(Icons.shopping_bag_outlined),
-              label: Text(
-                '₸${cart.fold<double>(0, (sum, item) => sum + item.price).toStringAsFixed(0)}',
-              ),
+              label: Text('₸${formatPrice(cart.totalPrice)}'),
             )
           : null,
       bottomNavigationBar: buildNavigationBar(
