@@ -7,10 +7,12 @@ class StickyActionBar extends StatelessWidget {
     super.key,
     required this.price,
     required this.onPressed,
+    required this.label,
   });
 
   final double price;
   final VoidCallback onPressed;
+  final String label;
 
   @override
   Widget build(BuildContext context) {
@@ -22,10 +24,13 @@ class StickyActionBar extends StatelessWidget {
           children: [
             Expanded(
               child: FilledButton.icon(
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(56),
+                ),
                 onPressed: onPressed,
                 key: const ValueKey('add-configured-drink'),
                 icon: const Icon(Icons.add),
-                label: Text('₸${formatPrice(price)}'),
+                label: Text('$label · ${formatPrice(price)} ₸'),
               ),
             ),
           ],

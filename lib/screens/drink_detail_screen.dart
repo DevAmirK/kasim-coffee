@@ -1,6 +1,11 @@
 import '../utils/format_price.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+
+import '../models/product.dart';
+import '../widgets/category_badge.dart';
+import '../widgets/sticky_action_bar.dart';
 
 import '../models/drink.dart';
 import '../models/cart_item.dart';
@@ -34,8 +39,8 @@ class DrinkDetailScreen extends StatefulWidget {
 }
 
 class _DrinkDetailScreenState extends State<DrinkDetailScreen> {
-  late String size = widget.initialItem?.size ?? 'M';
-  late String milk = widget.initialItem?.milk ?? 'Whole';
+  late String size = widget.initialItem?.size ?? widget.drink.defaultSize;
+  late String milk = widget.initialItem?.milk ?? widget.drink.defaultMilk;
   late String syrup = widget.initialItem?.syrup ?? 'None';
   late double currentRating = widget.rating;
   late bool hasRated = widget.rated;
@@ -44,13 +49,44 @@ class _DrinkDetailScreenState extends State<DrinkDetailScreen> {
       CartItem(drink: widget.drink, size: size, milk: milk, syrup: syrup);
   double get price => selectedItem.price;
 
+  int page = 0;
+  List<String> get photos {
+    final drink = widget.drink;
+    return drink is Product && drink.gallery.isNotEmpty
+        ? drink.gallery
+        : [drink.imageUrl];
+  }
+
+  void share() {
+    final link =
+        'narxoz://store/product/${Uri.encodeComponent(widget.drink.id)}';
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (sheet) => SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: ListTile(
+            title: SelectableText(link),
+            trailing: TextButton(
+              onPressed: () async {
+                await Clipboard.setData(ClipboardData(text: link));
+                if (sheet.mounted) Navigator.pop(sheet);
+              },
+              child: const Text('Copy'),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget options(
     String label,
     List<String> values,
     String selected,
     ValueChanged<String> change,
   ) => Padding(
-    padding: const EdgeInsets.only(top: 10),
+    padding: const EdgeInsets.only(top: 6),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -104,13 +140,15 @@ class _DrinkDetailScreenState extends State<DrinkDetailScreen> {
                                 },
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                    vertical: 11,
+                                    vertical: 8,
                                     horizontal: 5,
                                   ),
                                   child: FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Text(
-                                      value,
+                                      label == 'Size'
+                                          ? '$value (${widget.drink.volumeFor(value)} ml)'
+                                          : value,
                                       style: const TextStyle(
                                         fontWeight: FontWeight.w700,
                                       ),
@@ -183,122 +221,149 @@ class _DrinkDetailScreenState extends State<DrinkDetailScreen> {
 
   @override
   Widget build(BuildContext context) => Scaffold(
+    bottomNavigationBar: StickyActionBar(
+      price: price,
+      label: widget.initialItem == null ? 'Add to Cart' : 'Save changes',
+      onPressed: () => widget.onAddToCart(selectedItem),
+    ),
     body: SafeArea(
-      child: LayoutBuilder(
-        builder: (context, constraints) => Padding(
-          padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Expanded(
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    ClipRRect(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(20, 8, 20, 8),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Expanded(
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Hero(
+                    tag: 'product_image_${widget.drink.id}',
+                    child: ClipRRect(
                       borderRadius: BorderRadius.circular(28),
-                      child: DrinkImage(drink: widget.drink),
+                      child: PageView.builder(
+                        itemCount: photos.length,
+                        onPageChanged: (index) => setState(() => page = index),
+                        itemBuilder: (_, index) => DrinkImage(
+                          drink: widget.drink,
+                          imageUrl: photos[index],
+                        ),
+                      ),
                     ),
+                  ),
+                  Positioned(
+                    left: 8,
+                    bottom: 8,
+                    child: Chip(label: Text('${page + 1} / ${photos.length}')),
+                  ),
+                  Positioned(
+                    bottom: 8,
+                    right: 8,
+                    child: IconButton.filledTonal(
+                      tooltip: 'Share',
+                      onPressed: share,
+                      icon: const Icon(Icons.share_outlined),
+                    ),
+                  ),
+                  Positioned(
+                    top: 8,
+                    left: 8,
+                    child: IconButton.filledTonal(
+                      tooltip: 'Close',
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ),
+                  if (widget.initialItem == null)
                     Positioned(
                       top: 8,
-                      left: 8,
+                      right: 8,
                       child: IconButton.filledTonal(
-                        tooltip: 'Close',
-                        onPressed: () => Navigator.pop(context),
-                        icon: const Icon(Icons.close),
-                      ),
-                    ),
-                    if (widget.initialItem == null)
-                      Positioned(
-                        top: 8,
-                        right: 8,
-                        child: IconButton.filledTonal(
-                          tooltip: 'Favorite',
-                          onPressed: () {
-                            setState(() => isLiked = !isLiked);
-                            widget.onFavorite();
-                          },
-                          icon: Icon(
-                            isLiked ? Icons.favorite : Icons.favorite_border,
-                          ),
+                        tooltip: 'Favorite',
+                        onPressed: () {
+                          setState(() => isLiked = !isLiked);
+                          widget.onFavorite();
+                        },
+                        icon: Icon(
+                          isLiked ? Icons.favorite : Icons.favorite_border,
                         ),
                       ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 10),
-              Text(
-                widget.drink.title,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 25,
-                  fontWeight: FontWeight.w800,
-                ),
-              ),
-              Center(
-                child: InkWell(
-                  onTap: widget.initialItem == null ? showRating : null,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 5),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Icon(
-                          Icons.star,
-                          size: 18,
-                          color: Color(0xFF9A6800),
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          '${hasRated ? currentRating.toStringAsFixed(1) : widget.drink.rating}  ·  ${hasRated ? 'Your rating' : 'Rate drink'}',
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                      ],
                     ),
+                ],
+              ),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: List.generate(
+                photos.length,
+                (index) => AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  margin: const EdgeInsets.all(4),
+                  width: index == page ? 16 : 7,
+                  height: 7,
+                  decoration: BoxDecoration(
+                    color: index == page ? Colors.black87 : Colors.black26,
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
               ),
-              Text(
-                widget.drink.description,
-                textAlign: TextAlign.center,
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 13),
+            ),
+            Center(child: CategoryBadge(label: widget.drink.category)),
+            const SizedBox(height: 10),
+            Text(
+              widget.drink.title,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 25, fontWeight: FontWeight.w800),
+            ),
+            Center(
+              child: InkWell(
+                onTap: widget.initialItem == null ? showRating : null,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 5),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(
+                        Icons.star,
+                        size: 18,
+                        color: Color(0xFF9A6800),
+                      ),
+                      const SizedBox(width: 5),
+                      Text(
+                        '${hasRated ? currentRating.toStringAsFixed(1) : widget.drink.rating}  ·  ${hasRated ? 'Your rating' : 'Rate drink'}',
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    ],
+                  ),
+                ),
               ),
+            ),
+            Text(
+              widget.drink.description,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 13),
+            ),
+            const SizedBox(height: 10),
+            options(
+              'Size',
+              widget.drink.volumes.keys.toList(),
+              size,
+              (value) => setState(() => size = value),
+            ),
+            if (widget.drink.milkOptions.isNotEmpty)
               options(
-                'Size',
-                ['S', 'M', 'L'],
-                size,
-                (value) => setState(() => size = value),
-              ),
-              options(
-                'Milk · alternatives +50 ₸',
-                ['Whole', 'Oat', 'Almond'],
+                'Milk · alternatives +${formatPrice(widget.drink.milkExtra)} ₸',
+                widget.drink.milkOptions,
                 milk,
                 (value) => setState(() => milk = value),
               ),
+            if (widget.drink.syrupOptions.isNotEmpty)
               options(
-                'Syrup · extra +40 ₸',
-                ['None', 'Vanilla', 'Caramel', 'Hazelnut'],
+                'Syrup · extra +${formatPrice(widget.drink.syrupExtra)} ₸',
+                widget.drink.syrupOptions,
                 syrup,
                 (value) => setState(() => syrup = value),
               ),
-              const SizedBox(height: 14),
-              SizedBox(
-                height: 56,
-                child: FilledButton(
-                  key: const ValueKey('add-configured-drink'),
-                  onPressed: () => widget.onAddToCart(selectedItem),
-                  child: Text(
-                    '${widget.initialItem == null ? 'Add for' : 'Save changes ·'} ${formatPrice(price)} ₸',
-                    style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          ],
         ),
       ),
     ),

@@ -6,9 +6,15 @@ import '../models/drink.dart';
 import 'drink_card.dart';
 
 class DrinkGrid extends StatelessWidget {
-  const DrinkGrid({super.key, required this.drinks, required this.onDrinkTap});
+  const DrinkGrid({
+    super.key,
+    required this.drinks,
+    required this.onDrinkTap,
+    this.animateImages = false,
+  });
   final List<Drink> drinks;
   final ValueChanged<Drink> onDrinkTap;
+  final bool animateImages;
 
   @override
   Widget build(BuildContext context) => SliverLayoutBuilder(
@@ -30,6 +36,7 @@ class DrinkGrid extends StatelessWidget {
             (context, index) => DrinkCard(
               drink: drinks[index],
               onTap: () => onDrinkTap(drinks[index]),
+              animateImage: animateImages,
             ),
             childCount: drinks.length,
           ),

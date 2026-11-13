@@ -1,121 +1,191 @@
 import 'package:flutter/material.dart';
 
-import '../data/mock_drinks.dart';
+import '../data/product_api.dart';
 import '../models/drink.dart';
+import '../models/product.dart';
+import '../utils/format_price.dart';
 import '../widgets/drink_grid.dart';
+import '../widgets/drink_image.dart';
 
 class MenuScreen extends StatefulWidget {
-  const MenuScreen({super.key, required this.onDrinkTap});
+  const MenuScreen({
+    super.key,
+    required this.onDrinkTap,
+    this.loadProducts = fetchProducts,
+  });
+
   final ValueChanged<Drink> onDrinkTap;
+  final Future<List<Product>> Function() loadProducts;
+
   @override
   State<MenuScreen> createState() => _MenuScreenState();
 }
 
 class _MenuScreenState extends State<MenuScreen> {
-  final search = TextEditingController();
-  String category = 'All';
+  List<Product>? products;
+  String? error;
+  bool loading = false;
+  bool showCards = true;
   String query = '';
+  String category = 'All';
+
   @override
-  void dispose() {
-    search.dispose();
-    super.dispose();
+  void initState() {
+    super.initState();
+    load();
   }
 
-  void clearFilters() => setState(() {
-    search.clear();
-    query = '';
-    category = 'All';
-  });
+  Future<void> load() async {
+    if (loading) return;
+    setState(() {
+      loading = true;
+      error = null;
+    });
+    try {
+      final result = await widget.loadProducts();
+      if (!mounted) return;
+      setState(() {
+        products = result;
+        if (!result.any((product) => product.category == category)) {
+          category = 'All';
+        }
+        loading = false;
+      });
+    } on CatalogException catch (exception) {
+      if (!mounted) return;
+      setState(() {
+        error = exception.message;
+        loading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final drinks = mockDrinks
-        .take(6)
+    if (error case final message?) {
+      return Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.cloud_off, size: 48),
+              const SizedBox(height: 12),
+              Text(message, textAlign: TextAlign.center),
+              const SizedBox(height: 12),
+              ElevatedButton(
+                onPressed: load,
+                child: const Text('Retry Connection'),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    final catalog = products;
+    if (catalog == null) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    final categories = {'All', ...catalog.map((product) => product.category)};
+    final visible = catalog
         .where(
-          (drink) =>
-              (category == 'All' || drink.category == category) &&
-              drink.title.toLowerCase().contains(query.trim().toLowerCase()),
+          (product) =>
+              (category == 'All' || category == product.category) &&
+              product.title.toLowerCase().contains(query.trim().toLowerCase()),
         )
         .toList();
+
     return SafeArea(
-      child: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 16),
-            sliver: SliverToBoxAdapter(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'Kasim Coffee',
-                    style: Theme.of(context).textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.w900),
-                  ),
-                  const Text('Your daily coffee, made easy'),
-                  const SizedBox(height: 24),
-                  Text(
-                    'Find your perfect sip',
-                    style: Theme.of(context).textTheme.headlineSmall
-                        ?.copyWith(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  TextField(
-                    controller: search,
-                    onChanged: (value) => setState(() => query = value),
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.search),
-                      hintText: 'Search drinks',
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  Wrap(
-                    spacing: 8,
-                    children: ['All', 'Coffee', 'Cold', 'Specialty', 'Tea']
-                        .map(
-                          (value) => ChoiceChip(
-                            label: Text(value),
-                            selected: category == value,
-                            onSelected: (_) => setState(() => category = value),
-                          ),
-                        )
-                        .toList(),
-                  ),
-                ],
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+            child: TextFormField(
+              initialValue: query,
+              onChanged: (value) => setState(() => query = value),
+              decoration: InputDecoration(
+                prefixIcon: const Icon(Icons.search),
+                hintText: 'Search drinks',
+                suffixIcon: IconButton(
+                  tooltip: showCards ? 'Show list' : 'Show cards',
+                  icon: Icon(showCards ? Icons.view_list : Icons.grid_view),
+                  onPressed: () => setState(() => showCards = !showCards),
+                ),
               ),
             ),
           ),
-          if (drinks.isEmpty)
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(Icons.search_off, size: 48),
-                    const SizedBox(height: 12),
-                    Text(
-                      'No drinks found',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Try another name or reset your filters.',
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 16),
-                    OutlinedButton(
-                      onPressed: clearFilters,
-                      child: const Text('Reset filters'),
-                    ),
-                  ],
-                ),
-              ),
-            )
-          else
-            SliverPadding(
-              padding: const EdgeInsets.fromLTRB(16, 0, 16, 100),
-              sliver: DrinkGrid(drinks: drinks, onDrinkTap: widget.onDrinkTap),
+          SizedBox(
+            height: 48,
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              scrollDirection: Axis.horizontal,
+              itemCount: categories.length,
+              separatorBuilder: (_, _) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final value = categories.elementAt(index);
+                return ChoiceChip(
+                  label: Text(value),
+                  selected: category == value,
+                  onSelected: (_) => setState(() => category = value),
+                );
+              },
             ),
+          ),
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: load,
+              child: showCards && visible.isNotEmpty
+                  ? CustomScrollView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      slivers: [
+                        SliverPadding(
+                          padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+                          sliver: DrinkGrid(
+                            drinks: visible,
+                            onDrinkTap: widget.onDrinkTap,
+                            animateImages: true,
+                          ),
+                        ),
+                      ],
+                    )
+                  : ListView.separated(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 96),
+                      itemCount: visible.isEmpty ? 1 : visible.length,
+                      separatorBuilder: (_, _) => const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        if (visible.isEmpty) {
+                          return const ListTile(title: Text('No drinks found'));
+                        }
+                        final product = visible[index];
+                        return ListTile(
+                          key: ValueKey(product.id),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 6,
+                            horizontal: 4,
+                          ),
+                          leading: SizedBox.square(
+                            dimension: 52,
+                            child: Hero(
+                              tag: 'product_image_${product.id}',
+                              child: DrinkImage(
+                                drink: product,
+                                borderRadius: 12,
+                              ),
+                            ),
+                          ),
+                          title: Text(product.title),
+                          subtitle: Text(
+                            '★ ${product.rating.toStringAsFixed(1)} · ${product.category}',
+                          ),
+                          trailing: Text('${formatPrice(product.price)} ₸'),
+                          onTap: () => widget.onDrinkTap(product),
+                        );
+                      },
+                    ),
+            ),
+          ),
         ],
       ),
     );

@@ -3,10 +3,13 @@ import 'drink.dart';
 class CartItem {
   CartItem({
     required this.drink,
-    this.size = 'M',
-    this.milk = 'Whole',
-    this.syrup = 'None',
-  }) : id = 'cart-${_nextId++}';
+    String? size,
+    String? milk,
+    String syrup = 'None',
+  }) : size = drink.volumes.containsKey(size) ? size! : drink.defaultSize,
+       milk = drink.milkOptions.contains(milk) ? milk! : drink.defaultMilk,
+       syrup = drink.syrupOptions.contains(syrup) ? syrup : 'None',
+       id = 'cart-${_nextId++}';
 
   static int _nextId = 0;
   final String id;
@@ -16,15 +19,17 @@ class CartItem {
   final String milk;
   final String syrup;
 
-  String get configuration =>
-      '$size • $milk milk • ${syrup == 'None' ? 'No syrup' : '$syrup syrup'}';
+  String get configuration => [
+    '$size (${drink.volumeFor(size)} ml)',
+    if (drink.milkOptions.isNotEmpty) '$milk milk',
+    if (syrup != 'None') '$syrup syrup',
+  ].join(' · ');
   double get price =>
-      drink.price +
-      (size == 'S'
-          ? -50
-          : size == 'L'
-          ? 75
+      drink.priceFor(size) +
+      (drink.milkOptions.contains(milk) && milk != drink.defaultMilk
+          ? drink.milkExtra
           : 0) +
-      (milk == 'Whole' ? 0 : 50) +
-      (syrup == 'None' ? 0 : 40);
+      (syrup != 'None' && drink.syrupOptions.contains(syrup)
+          ? drink.syrupExtra
+          : 0);
 }

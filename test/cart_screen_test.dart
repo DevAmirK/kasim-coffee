@@ -11,7 +11,7 @@ void main() {
   test('quantities preserve extras and order snapshots', () {
     final cart = CartProvider();
     final item = CartItem(
-      drink: mockDrinks.first,
+      drink: mockDrinks.firstWhere((drink) => drink.id == 'latte'),
       size: 'L',
       milk: 'Oat',
       syrup: 'Vanilla',
@@ -59,7 +59,12 @@ void main() {
                 SizedBox(
                   height: 300,
                   width: 200,
-                  child: DrinkCard(drink: mockDrinks.first, onTap: () {}),
+                  child: DrinkCard(
+                    drink: mockDrinks.firstWhere(
+                      (drink) => drink.id == 'latte',
+                    ),
+                    onTap: () {},
+                  ),
                 ),
                 Expanded(
                   child: CartScreen(

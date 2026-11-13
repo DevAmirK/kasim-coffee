@@ -1,3 +1,5 @@
+import 'dart:ui' show PointerDeviceKind;
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +23,12 @@ class KasimCoffeeApp extends StatelessWidget {
         title: 'Kasim Coffee',
         debugShowCheckedModeBanner: false,
         theme: AppTheme.light,
+        scrollBehavior: const MaterialScrollBehavior().copyWith(
+          dragDevices: {
+            ...const MaterialScrollBehavior().dragDevices,
+            PointerDeviceKind.mouse,
+          },
+        ),
         home: const LoginScreen(),
       ),
     );

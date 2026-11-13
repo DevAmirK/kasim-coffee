@@ -2,7 +2,6 @@ import '../utils/format_price.dart';
 
 import 'package:flutter/material.dart';
 
-import '../data/mock_drinks.dart';
 import '../models/drink.dart';
 
 import 'package:provider/provider.dart';
@@ -26,7 +25,7 @@ class RootScreen extends StatefulWidget {
 
 class _RootScreenState extends State<RootScreen> {
   int tab = 0;
-  final favorites = <String>{};
+  final favorites = <String, Drink>{};
   final ratings = <String, double>{};
   CartProvider get cartProvider => context.read<CartProvider>();
 
@@ -35,10 +34,10 @@ class _RootScreenState extends State<RootScreen> {
 
   void toggleFavorite(Drink drink) {
     setState(() {
-      if (favorites.contains(drink.id)) {
+      if (favorites.containsKey(drink.id)) {
         favorites.remove(drink.id);
       } else {
-        favorites.add(drink.id);
+        favorites[drink.id] = drink;
       }
     });
   }
@@ -58,7 +57,7 @@ class _RootScreenState extends State<RootScreen> {
     MaterialPageRoute(
       builder: (_) => DrinkDetailScreen(
         drink: drink,
-        liked: favorites.contains(drink.id),
+        liked: favorites.containsKey(drink.id),
         rating: ratings[drink.id] ?? drink.rating,
         rated: ratings.containsKey(drink.id),
         onFavorite: () => toggleFavorite(drink),
@@ -130,13 +129,11 @@ class _RootScreenState extends State<RootScreen> {
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
     final screens = [
-      MenuScreen(onDrinkTap: openDrink),
-      FavoritesScreen(
-        drinks: mockDrinks
-            .where((drink) => favorites.contains(drink.id))
-            .toList(),
-        onDrinkTap: openDrink,
+      HeroMode(
+        enabled: tab == 0,
+        child: MenuScreen(onDrinkTap: openDrink),
       ),
+      FavoritesScreen(drinks: favorites.values.toList(), onDrinkTap: openDrink),
       ProfileScreen(
         user: widget.user,
         stamps: stamps,

@@ -1,0 +1,654 @@
+[
+  {
+    "id": "espresso",
+    "title": "Espresso",
+    "description": "Concentrated espresso with golden crema.",
+    "imageUrl": "assets/drinks/espresso-gallery-1.jpg",
+    "price": 900.0,
+    "category": "Coffee",
+    "rating": 4.9,
+    "reviewCount": 0,
+    "ingredients": [
+      "Espresso"
+    ],
+    "volumes": {
+      "Single": 30,
+      "Double": 60
+    },
+    "sizeExtras": {
+      "Single": 0.0,
+      "Double": 300.0
+    },
+    "milkOptions": [],
+    "syrupOptions": [],
+    "serving": "Hot",
+    "caffeine": "Contains caffeine",
+    "allergens": "No milk or nuts in the recipe",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/espresso-gallery-1.jpg",
+      "assets/drinks/espresso-gallery-2.jpg",
+      "assets/drinks/espresso-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "cappuccino",
+    "title": "Cappuccino",
+    "description": "Espresso, steamed milk and a thick cap of foam.",
+    "imageUrl": "assets/drinks/cappuccino-gallery-1.jpg",
+    "price": 1100.0,
+    "category": "Coffee",
+    "rating": 4.8,
+    "reviewCount": 0,
+    "ingredients": [
+      "Espresso",
+      "Milk",
+      "Milk foam"
+    ],
+    "volumes": {
+      "S": 180,
+      "M": 250,
+      "L": 350
+    },
+    "sizeExtras": {
+      "S": -200.0,
+      "M": 0.0,
+      "L": 300.0
+    },
+    "milkOptions": [
+      "Whole",
+      "Oat",
+      "Almond"
+    ],
+    "syrupOptions": [
+      "None",
+      "Vanilla",
+      "Caramel",
+      "Hazelnut"
+    ],
+    "serving": "Hot",
+    "caffeine": "Contains caffeine",
+    "allergens": "Milk; almond milk contains nuts",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/cappuccino-gallery-1.jpg",
+      "assets/drinks/cappuccino-gallery-2.jpg",
+      "assets/drinks/cappuccino-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "latte",
+    "title": "Latte",
+    "description": "Espresso softened with plenty of silky steamed milk.",
+    "imageUrl": "assets/drinks/latte-gallery-1.jpg",
+    "price": 1200.0,
+    "category": "Coffee",
+    "rating": 4.8,
+    "reviewCount": 0,
+    "ingredients": [
+      "Espresso",
+      "Milk",
+      "Microfoam"
+    ],
+    "volumes": {
+      "S": 250,
+      "M": 350,
+      "L": 450
+    },
+    "sizeExtras": {
+      "S": -200.0,
+      "M": 0.0,
+      "L": 300.0
+    },
+    "milkOptions": [
+      "Whole",
+      "Oat",
+      "Almond"
+    ],
+    "syrupOptions": [
+      "None",
+      "Vanilla",
+      "Caramel",
+      "Hazelnut"
+    ],
+    "serving": "Hot",
+    "caffeine": "Contains caffeine",
+    "allergens": "Milk; almond milk contains nuts",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/latte-gallery-1.jpg",
+      "assets/drinks/latte-gallery-2.jpg",
+      "assets/drinks/latte-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "flat-white",
+    "title": "Flat White",
+    "description": "Double espresso and steamed milk with fine microfoam.",
+    "imageUrl": "assets/drinks/flat-white-gallery-1.jpg",
+    "price": 1100.0,
+    "category": "Coffee",
+    "rating": 4.7,
+    "reviewCount": 0,
+    "ingredients": [
+      "Double espresso",
+      "Milk"
+    ],
+    "volumes": {
+      "Regular": 180
+    },
+    "sizeExtras": {
+      "Regular": 0.0
+    },
+    "milkOptions": [
+      "Whole",
+      "Oat",
+      "Almond"
+    ],
+    "syrupOptions": [],
+    "serving": "Hot",
+    "caffeine": "Contains caffeine",
+    "allergens": "Milk; almond milk contains nuts",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/flat-white-gallery-1.jpg",
+      "assets/drinks/flat-white-gallery-2.jpg",
+      "assets/drinks/flat-white-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "iced-americano",
+    "title": "Iced Americano",
+    "description": "Espresso poured over cold water and ice.",
+    "imageUrl": "assets/drinks/iced-americano-gallery-1.jpg",
+    "price": 1000.0,
+    "category": "Cold",
+    "rating": 4.6,
+    "reviewCount": 0,
+    "ingredients": [
+      "Espresso",
+      "Water",
+      "Ice"
+    ],
+    "volumes": {
+      "M": 350,
+      "L": 450
+    },
+    "sizeExtras": {
+      "M": 0.0,
+      "L": 200.0
+    },
+    "milkOptions": [],
+    "syrupOptions": [
+      "None",
+      "Vanilla",
+      "Caramel",
+      "Hazelnut"
+    ],
+    "serving": "Iced",
+    "caffeine": "Contains caffeine",
+    "allergens": "No milk or nuts in the recipe",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/iced-americano-gallery-1.jpg",
+      "assets/drinks/iced-americano-gallery-2.jpg",
+      "assets/drinks/iced-americano-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "caramel-macchiato",
+    "title": "Caramel Macchiato",
+    "description": "Vanilla milk topped with espresso and caramel sauce.",
+    "imageUrl": "assets/drinks/caramel-macchiato-gallery-1.jpg",
+    "price": 1500.0,
+    "category": "Specialty",
+    "rating": 4.9,
+    "reviewCount": 0,
+    "ingredients": [
+      "Espresso",
+      "Milk",
+      "Vanilla syrup",
+      "Caramel sauce"
+    ],
+    "volumes": {
+      "S": 250,
+      "M": 350,
+      "L": 450
+    },
+    "sizeExtras": {
+      "S": -200.0,
+      "M": 0.0,
+      "L": 300.0
+    },
+    "milkOptions": [
+      "Whole",
+      "Oat",
+      "Almond"
+    ],
+    "syrupOptions": [],
+    "serving": "Hot",
+    "caffeine": "Contains caffeine",
+    "allergens": "Milk, including caramel sauce; almond option contains nuts",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/caramel-macchiato-gallery-1.jpg",
+      "assets/drinks/caramel-macchiato-gallery-2.jpg",
+      "assets/drinks/caramel-macchiato-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "matcha-latte",
+    "title": "Matcha Latte",
+    "description": "Japanese green tea powder whisked with steamed milk.",
+    "imageUrl": "assets/drinks/matcha-latte-gallery-1.jpg",
+    "price": 1400.0,
+    "category": "Tea",
+    "rating": 4.8,
+    "reviewCount": 0,
+    "ingredients": [
+      "Matcha",
+      "Water",
+      "Milk"
+    ],
+    "volumes": {
+      "S": 250,
+      "M": 350,
+      "L": 450
+    },
+    "sizeExtras": {
+      "S": -200.0,
+      "M": 0.0,
+      "L": 300.0
+    },
+    "milkOptions": [
+      "Whole",
+      "Oat",
+      "Almond"
+    ],
+    "syrupOptions": [
+      "None",
+      "Vanilla"
+    ],
+    "serving": "Hot",
+    "caffeine": "Contains caffeine from green tea",
+    "allergens": "Milk; almond milk contains nuts",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/matcha-latte-gallery-1.jpg",
+      "assets/drinks/matcha-latte-gallery-2.jpg",
+      "assets/drinks/matcha-latte-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "cold-brew",
+    "title": "Cold Brew",
+    "description": "Coffee steeped in cold water for 16 hours, served over ice.",
+    "imageUrl": "assets/drinks/cold-brew-gallery-1.jpg",
+    "price": 1300.0,
+    "category": "Cold",
+    "rating": 4.7,
+    "reviewCount": 0,
+    "ingredients": [
+      "Cold-brewed coffee",
+      "Ice"
+    ],
+    "volumes": {
+      "M": 300,
+      "L": 400
+    },
+    "sizeExtras": {
+      "M": 0.0,
+      "L": 300.0
+    },
+    "milkOptions": [],
+    "syrupOptions": [
+      "None",
+      "Vanilla",
+      "Caramel",
+      "Hazelnut"
+    ],
+    "serving": "Iced",
+    "caffeine": "Contains caffeine",
+    "allergens": "No milk or nuts in the recipe",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/cold-brew-gallery-1.jpg",
+      "assets/drinks/cold-brew-gallery-2.jpg",
+      "assets/drinks/cold-brew-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "americano",
+    "title": "Americano",
+    "description": "Espresso lengthened with hot water for a clean coffee taste.",
+    "imageUrl": "assets/drinks/americano-gallery-1.jpg",
+    "price": 1000.0,
+    "category": "Coffee",
+    "rating": 4.7,
+    "reviewCount": 0,
+    "ingredients": [
+      "Espresso",
+      "Hot water"
+    ],
+    "volumes": {
+      "S": 200,
+      "M": 300,
+      "L": 400
+    },
+    "sizeExtras": {
+      "S": -200.0,
+      "M": 0.0,
+      "L": 300.0
+    },
+    "milkOptions": [],
+    "syrupOptions": [
+      "None",
+      "Vanilla",
+      "Caramel",
+      "Hazelnut"
+    ],
+    "serving": "Hot",
+    "caffeine": "Contains caffeine",
+    "allergens": "No milk or nuts in the recipe",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/americano-gallery-1.jpg",
+      "assets/drinks/americano-gallery-2.jpg",
+      "assets/drinks/americano-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "mocha",
+    "title": "Mocha",
+    "description": "Espresso and cocoa with steamed milk and chocolate dusting.",
+    "imageUrl": "assets/drinks/mocha-gallery-1.jpg",
+    "price": 1500.0,
+    "category": "Specialty",
+    "rating": 4.8,
+    "reviewCount": 0,
+    "ingredients": [
+      "Espresso",
+      "Milk",
+      "Cocoa",
+      "Sugar"
+    ],
+    "volumes": {
+      "S": 250,
+      "M": 350,
+      "L": 450
+    },
+    "sizeExtras": {
+      "S": -200.0,
+      "M": 0.0,
+      "L": 300.0
+    },
+    "milkOptions": [
+      "Whole",
+      "Oat",
+      "Almond"
+    ],
+    "syrupOptions": [
+      "None",
+      "Vanilla",
+      "Hazelnut"
+    ],
+    "serving": "Hot",
+    "caffeine": "Contains caffeine",
+    "allergens": "Milk; almond milk contains nuts",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/mocha-gallery-1.jpg",
+      "assets/drinks/mocha-gallery-2.jpg",
+      "assets/drinks/mocha-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "vanilla-raf",
+    "title": "Vanilla Raf",
+    "description": "Espresso, cream and vanilla sugar steamed together.",
+    "imageUrl": "assets/drinks/vanilla-raf-gallery-1.jpg",
+    "price": 1600.0,
+    "category": "Specialty",
+    "rating": 4.9,
+    "reviewCount": 0,
+    "ingredients": [
+      "Espresso",
+      "Cream",
+      "Vanilla sugar"
+    ],
+    "volumes": {
+      "S": 250,
+      "M": 350
+    },
+    "sizeExtras": {
+      "S": -300.0,
+      "M": 0.0
+    },
+    "milkOptions": [],
+    "syrupOptions": [],
+    "serving": "Hot",
+    "caffeine": "Contains caffeine",
+    "allergens": "Milk: contains dairy cream",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/vanilla-raf-gallery-1.jpg",
+      "assets/drinks/vanilla-raf-gallery-2.jpg",
+      "assets/drinks/vanilla-raf-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "hot-chocolate",
+    "title": "Hot Chocolate",
+    "description": "Rich cocoa and steamed milk with a smooth chocolate finish.",
+    "imageUrl": "assets/drinks/hot-chocolate-gallery-1.jpg",
+    "price": 1300.0,
+    "category": "Chocolate",
+    "rating": 4.8,
+    "reviewCount": 0,
+    "ingredients": [
+      "Cocoa",
+      "Milk",
+      "Sugar"
+    ],
+    "volumes": {
+      "S": 250,
+      "M": 350,
+      "L": 450
+    },
+    "sizeExtras": {
+      "S": -200.0,
+      "M": 0.0,
+      "L": 300.0
+    },
+    "milkOptions": [
+      "Whole",
+      "Oat",
+      "Almond"
+    ],
+    "syrupOptions": [
+      "None",
+      "Vanilla",
+      "Hazelnut"
+    ],
+    "serving": "Hot",
+    "caffeine": "Small amount of caffeine naturally present in cocoa",
+    "allergens": "Milk; almond milk contains nuts",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/hot-chocolate-gallery-1.jpg",
+      "assets/drinks/hot-chocolate-gallery-2.jpg",
+      "assets/drinks/hot-chocolate-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "iced-latte",
+    "title": "Iced Latte",
+    "description": "Chilled milk, fresh espresso and plenty of ice.",
+    "imageUrl": "assets/drinks/iced-latte-gallery-1.jpg",
+    "price": 1300.0,
+    "category": "Cold",
+    "rating": 4.8,
+    "reviewCount": 0,
+    "ingredients": [
+      "Espresso",
+      "Milk",
+      "Ice"
+    ],
+    "volumes": {
+      "M": 350,
+      "L": 450
+    },
+    "sizeExtras": {
+      "M": 0.0,
+      "L": 300.0
+    },
+    "milkOptions": [
+      "Whole",
+      "Oat",
+      "Almond"
+    ],
+    "syrupOptions": [
+      "None",
+      "Vanilla",
+      "Caramel",
+      "Hazelnut"
+    ],
+    "serving": "Iced",
+    "caffeine": "Contains caffeine",
+    "allergens": "Milk; almond milk contains nuts",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/iced-latte-gallery-1.jpg",
+      "assets/drinks/iced-latte-gallery-2.jpg",
+      "assets/drinks/iced-latte-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "iced-matcha",
+    "title": "Iced Matcha Latte",
+    "description": "Whisked matcha layered over cold milk and ice.",
+    "imageUrl": "assets/drinks/iced-matcha-gallery-1.jpg",
+    "price": 1500.0,
+    "category": "Tea",
+    "rating": 4.8,
+    "reviewCount": 0,
+    "ingredients": [
+      "Matcha",
+      "Water",
+      "Milk",
+      "Ice"
+    ],
+    "volumes": {
+      "M": 350,
+      "L": 450
+    },
+    "sizeExtras": {
+      "M": 0.0,
+      "L": 300.0
+    },
+    "milkOptions": [
+      "Whole",
+      "Oat",
+      "Almond"
+    ],
+    "syrupOptions": [
+      "None",
+      "Vanilla"
+    ],
+    "serving": "Iced",
+    "caffeine": "Contains caffeine from green tea",
+    "allergens": "Milk; almond milk contains nuts",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/iced-matcha-gallery-1.jpg",
+      "assets/drinks/iced-matcha-gallery-2.jpg",
+      "assets/drinks/iced-matcha-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "black-tea",
+    "title": "Black Tea",
+    "description": "Freshly brewed loose-leaf black tea, served without milk.",
+    "imageUrl": "assets/drinks/black-tea-gallery-1.jpg",
+    "price": 700.0,
+    "category": "Tea",
+    "rating": 4.6,
+    "reviewCount": 0,
+    "ingredients": [
+      "Black tea",
+      "Hot water"
+    ],
+    "volumes": {
+      "M": 300,
+      "L": 450
+    },
+    "sizeExtras": {
+      "M": 0.0,
+      "L": 200.0
+    },
+    "milkOptions": [],
+    "syrupOptions": [],
+    "serving": "Hot",
+    "caffeine": "Contains caffeine from black tea",
+    "allergens": "No milk or nuts in the recipe",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/black-tea-gallery-1.jpg",
+      "assets/drinks/black-tea-gallery-2.jpg",
+      "assets/drinks/black-tea-gallery-3.jpg"
+    ]
+  },
+  {
+    "id": "berry-lemonade",
+    "title": "Berry Lemonade",
+    "description": "Raspberry and blueberry puree with lemon, sparkling water and ice.",
+    "imageUrl": "assets/drinks/berry-lemonade-gallery-1.jpg",
+    "price": 1400.0,
+    "category": "Cold",
+    "rating": 4.8,
+    "reviewCount": 0,
+    "ingredients": [
+      "Raspberry",
+      "Blueberry",
+      "Lemon juice",
+      "Sugar",
+      "Sparkling water",
+      "Ice"
+    ],
+    "volumes": {
+      "M": 350,
+      "L": 450
+    },
+    "sizeExtras": {
+      "M": 0.0,
+      "L": 300.0
+    },
+    "milkOptions": [],
+    "syrupOptions": [],
+    "serving": "Iced",
+    "caffeine": "Caffeine-free",
+    "allergens": "No milk or nuts in the recipe",
+    "milkExtra": 300.0,
+    "syrupExtra": 200.0,
+    "gallery": [
+      "assets/drinks/berry-lemonade-gallery-1.jpg",
+      "assets/drinks/berry-lemonade-gallery-2.jpg",
+      "assets/drinks/berry-lemonade-gallery-3.jpg"
+    ]
+  }
+]

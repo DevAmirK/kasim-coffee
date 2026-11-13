@@ -8,9 +8,15 @@ import '../models/cart_item.dart';
 import 'drink_image.dart';
 
 class DrinkCard extends StatelessWidget {
-  const DrinkCard({super.key, required this.drink, required this.onTap});
+  const DrinkCard({
+    super.key,
+    required this.drink,
+    required this.onTap,
+    this.animateImage = false,
+  });
   final Drink drink;
   final VoidCallback onTap;
+  final bool animateImage;
 
   @override
   Widget build(BuildContext context) => Card(
@@ -20,7 +26,15 @@ class DrinkCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          AspectRatio(aspectRatio: 1, child: DrinkImage(drink: drink)),
+          AspectRatio(
+            aspectRatio: 1,
+            child: animateImage
+                ? Hero(
+                    tag: 'product_image_${drink.id}',
+                    child: DrinkImage(drink: drink),
+                  )
+                : DrinkImage(drink: drink),
+          ),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.fromLTRB(10, 10, 10, 6),
@@ -44,7 +58,7 @@ class DrinkCard extends StatelessWidget {
               ),
               onPressed: onTap,
               child: Text(
-                'from ${formatPrice(CartItem(drink: drink, size: 'S').price)} ₸',
+                'from ${formatPrice(CartItem(drink: drink, size: drink.volumes.keys.first).price)} ₸',
                 textAlign: TextAlign.center,
               ),
             ),
