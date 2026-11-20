@@ -1,4 +1,5 @@
 import '../utils/format_price.dart';
+import '../data/auth_store.dart';
 
 import 'package:flutter/material.dart';
 
@@ -140,7 +141,19 @@ class _RootScreenState extends State<RootScreen> {
         favoritesCount: favorites.length,
         ratingsGiven: ratings.length,
         onReset: reset,
-        onLogout: () {
+        onLogout: () async {
+          try {
+            await AuthStore.clearSession();
+          } catch (_) {
+            if (!context.mounted) return;
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Could not log out. Please try again.'),
+              ),
+            );
+            return;
+          }
+          if (!context.mounted) return;
           cartProvider.clear();
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (_) => const LoginScreen()),

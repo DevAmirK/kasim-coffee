@@ -8,6 +8,38 @@ class AppTheme {
   static const background = Color(0xFFF5F5F2);
   static const border = Color(0xFFE6E6E2);
 
+  // Both themes must supply the same text-style shape during interpolation.
+  static final _filledButtonTheme = FilledButtonThemeData(
+    style: FilledButton.styleFrom(
+      textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
+    ),
+  );
+
+  static ThemeData get dark {
+    final scheme = ColorScheme.fromSeed(
+      seedColor: primary,
+      brightness: Brightness.dark,
+    ).copyWith(primary: primary, onPrimary: graphite);
+    return ThemeData(
+      useMaterial3: true,
+      colorScheme: scheme,
+      filledButtonTheme: _filledButtonTheme,
+      scaffoldBackgroundColor: const Color(0xFF141414),
+      appBarTheme: AppBarTheme(
+        backgroundColor: scheme.surface,
+        surfaceTintColor: Colors.transparent,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        filled: true,
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
+      ),
+      cardTheme: CardThemeData(
+        elevation: 0,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      ),
+    );
+  }
+
   static ThemeData get light {
     final scheme = ColorScheme.fromSeed(
       seedColor: primary,
@@ -34,11 +66,7 @@ class AppTheme {
         headlineSmall: TextStyle(color: graphite),
         headlineMedium: TextStyle(color: graphite),
       ),
-      filledButtonTheme: FilledButtonThemeData(
-        style: FilledButton.styleFrom(
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w800),
-        ),
-      ),
+      filledButtonTheme: _filledButtonTheme,
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(foregroundColor: graphite),
       ),

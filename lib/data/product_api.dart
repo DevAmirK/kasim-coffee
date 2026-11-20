@@ -1,14 +1,20 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 
 import '../models/product.dart';
 
-const _apiUrl = String.fromEnvironment(
+const _configuredApiUrl = String.fromEnvironment(
   'API_URL',
-  defaultValue: 'http://localhost:8080',
 );
+
+String get _apiUrl => _configuredApiUrl.isNotEmpty
+    ? _configuredApiUrl
+    : !kIsWeb && defaultTargetPlatform == TargetPlatform.android
+    ? 'http://10.0.2.2:8080'
+    : 'http://localhost:8080';
 
 Future<List<Product>> fetchProducts() async {
   final url = Uri.parse(_apiUrl).resolve('/products');

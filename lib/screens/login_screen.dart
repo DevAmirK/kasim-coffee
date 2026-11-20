@@ -18,6 +18,28 @@ class _LoginScreenState extends State<LoginScreen> {
   final email = TextEditingController();
   final password = TextEditingController();
   bool hidden = true;
+  bool signingIn = false;
+
+  Future<void> openAccount(User user) async {
+    if (signingIn) return;
+    setState(() => signingIn = true);
+    try {
+      await AuthStore.saveSession(user);
+      if (!mounted) return;
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (_) => RootScreen(user: user)),
+      );
+    } catch (_) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not save sign-in. Please try again.'),
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => signingIn = false);
+    }
+  }
 
   @override
   void initState() {
@@ -44,28 +66,21 @@ class _LoginScreenState extends State<LoginScreen> {
       return;
     }
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(
-        builder: (_) => RootScreen(
-          user:
-              user ??
-              User(
-                name: email.text.split('@').first,
-                email: email.text.trim(),
-                password: password.text,
-                coffeeLevel: 'Beginner',
-              ),
-        ),
-      ),
+    openAccount(
+      user ??
+          User(
+            name: email.text.split('@').first,
+            email: email.text.trim(),
+            password: password.text,
+            coffeeLevel: 'Beginner',
+          ),
     );
   }
 
   void quickLogin() {
     final user = AuthStore.registeredUser;
     if (user == null) return;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => RootScreen(user: user)),
-    );
+    openAccount(user);
   }
 
   void developmentLogin() {
@@ -76,9 +91,7 @@ class _LoginScreenState extends State<LoginScreen> {
       coffeeLevel: 'Beginner',
     );
     AuthStore.lastEmail = user.email;
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => const RootScreen(user: user)),
-    );
+    openAccount(user);
   }
 
   @override
@@ -141,7 +154,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton(
-                        onPressed: submit,
+                        onPressed: signingIn ? null : submit,
                         child: const Padding(
                           padding: EdgeInsets.all(14),
                           child: Text('Sign in'),
@@ -153,7 +166,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton.icon(
-                          onPressed: developmentLogin,
+                          onPressed: signingIn ? null : developmentLogin,
                           icon: const Icon(Icons.bolt),
                           label: const Text('Quick login'),
                         ),
@@ -164,7 +177,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton.icon(
-                          onPressed: quickLogin,
+                          onPressed: signingIn ? null : quickLogin,
                           icon: const Icon(Icons.bolt),
                           label: Text(
                             'Quick login as ${AuthStore.registeredUser!.name}',
@@ -199,4 +212,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-

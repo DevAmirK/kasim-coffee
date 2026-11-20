@@ -103,7 +103,7 @@ class _DrinkDetailScreenState extends State<DrinkDetailScreen> {
             return Container(
               padding: const EdgeInsets.all(4),
               decoration: BoxDecoration(
-                color: const Color(0xFFE9E7DF),
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(28),
               ),
               child: Stack(
@@ -117,7 +117,7 @@ class _DrinkDetailScreenState extends State<DrinkDetailScreen> {
                     width: segmentWidth,
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(24),
                       ),
                     ),

@@ -21,6 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool hiddenPassword = true;
   bool hiddenConfirm = true;
   String? termsError;
+  bool saving = false;
 
   @override
   void dispose() {
@@ -31,7 +32,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void submit() {
+  Future<void> submit() async {
+    if (saving) return;
     setState(
       () => termsError = terms ? null : 'Please accept the terms to continue.',
     );
@@ -42,6 +44,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
       password: password.text,
       coffeeLevel: role,
     );
+    setState(() => saving = true);
+    try {
+      await AuthStore.saveSession(user);
+    } catch (_) {
+      if (!mounted) return;
+      setState(() => saving = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Could not save sign-in. Please try again.'),
+        ),
+      );
+      return;
+    }
+    if (!mounted) return;
     AuthStore.registeredUser = user;
     debugPrint('Registered ${user.email} as ${user.coffeeLevel}');
     ScaffoldMessenger.of(context)
@@ -182,7 +198,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     SizedBox(
                       width: double.infinity,
                       child: FilledButton(
-                        onPressed: submit,
+                        onPressed: saving ? null : submit,
                         child: const Padding(
                           padding: EdgeInsets.all(14),
                           child: Text('Create account'),

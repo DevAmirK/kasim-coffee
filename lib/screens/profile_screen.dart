@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/settings_provider.dart';
+import '../widgets/settings_vault.dart';
 
 import '../models/user.dart';
 import '../widgets/stamp_card.dart';
@@ -34,7 +38,7 @@ class ProfileScreen extends StatelessWidget {
           child: ListTile(
             leading: const CircleAvatar(child: Icon(Icons.person)),
             title: Text(
-              user.name,
+              context.watch<SettingsProvider>().displayName,
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             subtitle: Text(
@@ -43,6 +47,7 @@ class ProfileScreen extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 16),
+        const SettingsVault(),
         StampCard(stamps: stamps),
         const SizedBox(height: 8),
         Text(
