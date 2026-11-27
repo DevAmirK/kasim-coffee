@@ -4,9 +4,9 @@ import 'dart:ui' show PointerDeviceKind;
 
 import 'package:flutter/material.dart';
 
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../providers/cart_provider.dart';
+import '../blocs/cart_bloc.dart';
 import '../models/cart_item.dart';
 import '../widgets/cart_product.dart';
 import 'drink_detail_screen.dart';
@@ -28,10 +28,9 @@ class CartScreen extends StatefulWidget {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  CartProvider get cart => context.read<CartProvider>();
-  List<CartItem> get items => cart.positions;
+  CartBloc get cart => context.read<CartBloc>();
 
-  void removeItem(CartItem item) => cart.remove(item);
+  void removeItem(CartItem item) => cart.add(RemoveProductEvent(item.id));
 
   void editItem(CartItem item) => Navigator.of(context).push(
     MaterialPageRoute(
@@ -45,7 +44,7 @@ class _CartScreenState extends State<CartScreen> {
         onRatingChanged: (_) {},
         onRatingCleared: () {},
         onAddToCart: (replacement) {
-          cart.replace(item, replacement);
+          cart.add(ReplaceProductEvent(item, replacement));
           Navigator.of(detailContext).pop();
         },
       ),
@@ -72,12 +71,11 @@ class _CartScreenState extends State<CartScreen> {
     );
     if (confirmed == true && mounted) {
       ScaffoldMessenger.of(context).removeCurrentSnackBar();
-      cart.clear();
+      cart.add(const ClearCartEvent());
     }
   }
 
-  Widget product(int index) {
-    final item = items[index];
+  Widget product(CartItem item, CartState state) {
     return Dismissible(
       key: ValueKey(item.id),
       direction: DismissDirection.endToStart,
@@ -91,17 +89,30 @@ class _CartScreenState extends State<CartScreen> {
       child: CartProduct(
         item: item,
         onEdit: () => editItem(item),
-        quantity: cart.quantity(item),
-        onIncrease: () => cart.increase(item),
-        onDecrease: () => cart.decrease(item),
+        quantity: state.quantity(item),
+        onIncrease: () => cart.add(
+          AddProductEvent(
+            CartItem(
+              drink: item.drink,
+              size: item.size,
+              milk: item.milk,
+              syrup: item.syrup,
+            ),
+          ),
+        ),
+        onDecrease: () => cart.add(DecreaseProductEvent(item)),
         onRemove: () => removeItem(item),
       ),
     );
   }
 
   @override
-  Widget build(BuildContext context) {
-    final subtotal = context.watch<CartProvider>().totalPrice;
+  Widget build(BuildContext context) =>
+      BlocBuilder<CartBloc, CartState>(builder: buildCart);
+
+  Widget buildCart(BuildContext context, CartState state) {
+    final items = state.positions;
+    final subtotal = state.totalPrice;
     final discount = widget.stamps >= 10 && items.isNotEmpty
         ? items.map((item) => item.price).reduce((a, b) => a < b ? a : b)
         : 0.0;
@@ -158,7 +169,7 @@ class _CartScreenState extends State<CartScreen> {
                 itemCount: items.length,
                 separatorBuilder: (_, _) =>
                     const Divider(height: 1, thickness: 0.5),
-                itemBuilder: (_, index) => product(index),
+                itemBuilder: (_, index) => product(items[index], state),
               ),
       ),
       bottomNavigationBar: Column(

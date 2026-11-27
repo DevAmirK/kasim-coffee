@@ -1,5 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../blocs/auth_cubit.dart';
 
 import '../data/auth_store.dart';
 import '../models/user.dart';
@@ -18,29 +21,6 @@ class _LoginScreenState extends State<LoginScreen> {
   final email = TextEditingController();
   final password = TextEditingController();
   bool hidden = true;
-  bool signingIn = false;
-
-  Future<void> openAccount(User user) async {
-    if (signingIn) return;
-    setState(() => signingIn = true);
-    try {
-      await AuthStore.saveSession(user);
-      if (!mounted) return;
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => RootScreen(user: user)),
-      );
-    } catch (_) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Could not save sign-in. Please try again.'),
-        ),
-      );
-    } finally {
-      if (mounted) setState(() => signingIn = false);
-    }
-  }
-
   @override
   void initState() {
     super.initState();
@@ -54,48 +34,47 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void submit() {
+  void submit(BuildContext context) {
     if (!formKey.currentState!.validate()) return;
-    final user = widget.registeredUser ?? AuthStore.registeredUser;
-    AuthStore.lastEmail = email.text.trim();
-    if (user != null &&
-        (user.email != email.text.trim() || user.password != password.text)) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Wrong email or password')));
-      return;
-    }
-
-    openAccount(
-      user ??
-          User(
-            name: email.text.split('@').first,
-            email: email.text.trim(),
-            password: password.text,
-            coffeeLevel: 'Beginner',
-          ),
+    context.read<AuthCubit>().login(
+      email.text,
+      password.text,
+      registeredUser: widget.registeredUser,
     );
   }
 
-  void quickLogin() {
-    final user = AuthStore.registeredUser;
-    if (user == null) return;
-    openAccount(user);
-  }
-
-  void developmentLogin() {
-    const user = User(
-      name: 'Test User',
-      email: 'test@example.com',
-      password: 'test123',
-      coffeeLevel: 'Beginner',
-    );
-    AuthStore.lastEmail = user.email;
-    openAccount(user);
+  void quickLogin(BuildContext context, User user) {
+    context.read<AuthCubit>().login(user.email, user.password);
   }
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => BlocProvider(
+    create: (_) => AuthCubit(),
+    child: BlocConsumer<AuthCubit, AuthState>(
+      listener: (context, state) {
+        if (state is AuthError) {
+          ScaffoldMessenger.of(context)
+            ..hideCurrentSnackBar()
+            ..showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+                backgroundColor: Colors.red.shade700,
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+        } else if (state is AuthSuccess) {
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          Navigator.of(context).pushReplacement(
+            MaterialPageRoute(builder: (_) => RootScreen(user: state.user)),
+          );
+        }
+      },
+      builder: buildForm,
+    ),
+  );
+
+  Widget buildForm(BuildContext context, AuthState state) {
+    final signingIn = state is AuthLoading;
     return Scaffold(
       body: SafeArea(
         child: Center(
@@ -153,20 +132,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 22),
                     SizedBox(
                       width: double.infinity,
-                      child: FilledButton(
-                        onPressed: signingIn ? null : submit,
-                        child: const Padding(
-                          padding: EdgeInsets.all(14),
-                          child: Text('Sign in'),
-                        ),
-                      ),
+                      child: signingIn
+                          ? const Center(child: CircularProgressIndicator())
+                          : FilledButton(
+                              onPressed: () => submit(context),
+                              child: const Padding(
+                                padding: EdgeInsets.all(14),
+                                child: Text('Sign in'),
+                              ),
+                            ),
                     ),
                     if (kDebugMode) ...[
                       const SizedBox(height: 10),
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton.icon(
-                          onPressed: signingIn ? null : developmentLogin,
+                          onPressed: signingIn
+                              ? null
+                              : () => quickLogin(context, AuthCubit.demo),
                           icon: const Icon(Icons.bolt),
                           label: const Text('Quick login'),
                         ),
@@ -177,7 +160,12 @@ class _LoginScreenState extends State<LoginScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: OutlinedButton.icon(
-                          onPressed: signingIn ? null : quickLogin,
+                          onPressed: signingIn
+                              ? null
+                              : () => quickLogin(
+                                  context,
+                                  AuthStore.registeredUser!,
+                                ),
                           icon: const Icon(Icons.bolt),
                           label: Text(
                             'Quick login as ${AuthStore.registeredUser!.name}',
@@ -187,18 +175,21 @@ class _LoginScreenState extends State<LoginScreen> {
                     ],
                     Center(
                       child: TextButton(
-                        onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(
-                            builder: (_) => RegisterScreen(
-                              onRegistered: (user) => Navigator.of(context)
-                                  .pushReplacement(
-                                    MaterialPageRoute(
-                                      builder: (_) => RootScreen(user: user),
-                                    ),
+                        onPressed: signingIn
+                            ? null
+                            : () => Navigator.of(context).push(
+                                MaterialPageRoute(
+                                  builder: (_) => RegisterScreen(
+                                    onRegistered: (user) =>
+                                        Navigator.of(context).pushReplacement(
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                RootScreen(user: user),
+                                          ),
+                                        ),
                                   ),
-                            ),
-                          ),
-                        ),
+                                ),
+                              ),
                         child: const Text('New here? Create an account'),
                       ),
                     ),

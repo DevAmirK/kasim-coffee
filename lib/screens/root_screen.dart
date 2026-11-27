@@ -5,9 +5,9 @@ import 'package:flutter/material.dart';
 
 import '../models/drink.dart';
 
-import 'package:provider/provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../providers/cart_provider.dart';
+import '../blocs/cart_bloc.dart';
 import '../models/coffee_order.dart';
 import '../models/user.dart';
 import 'cart_screen.dart';
@@ -28,7 +28,7 @@ class _RootScreenState extends State<RootScreen> {
   int tab = 0;
   final favorites = <String, Drink>{};
   final ratings = <String, double>{};
-  CartProvider get cartProvider => context.read<CartProvider>();
+  CartBloc get cartBloc => context.read<CartBloc>();
 
   final orders = <CoffeeOrder>[];
   int stamps = 0;
@@ -66,7 +66,7 @@ class _RootScreenState extends State<RootScreen> {
         onRatingCleared: () => clearRating(drink),
         onAddToCart: (item) {
           setState(() {
-            cartProvider.add(item);
+            cartBloc.add(AddProductEvent(item));
             tab = 0;
           });
           Navigator.pop(context, true);
@@ -84,7 +84,7 @@ class _RootScreenState extends State<RootScreen> {
           Navigator.of(cartContext).pop();
         }),
         onCheckout: () {
-          final cart = cartProvider.items;
+          final cart = cartBloc.state.items;
           if (cart.isEmpty) return;
           final redeem = stamps >= 10;
           final discount = redeem
@@ -102,7 +102,7 @@ class _RootScreenState extends State<RootScreen> {
                         cart.length -
                         (redeem ? 1 : 0))
                     .clamp(0, 10);
-            cartProvider.clear();
+            cartBloc.add(const ClearCartEvent());
             tab = 0;
           });
           Navigator.of(cartContext).pop();
@@ -128,7 +128,6 @@ class _RootScreenState extends State<RootScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final cart = context.watch<CartProvider>();
     final screens = [
       HeroMode(
         enabled: tab == 0,
@@ -154,7 +153,7 @@ class _RootScreenState extends State<RootScreen> {
             return;
           }
           if (!context.mounted) return;
-          cartProvider.clear();
+          cartBloc.add(const ClearCartEvent());
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (_) => const LoginScreen()),
             (_) => false,
@@ -169,23 +168,28 @@ class _RootScreenState extends State<RootScreen> {
           IconButton(
             tooltip: "Open cart",
             onPressed: openCart,
-            icon: Badge(
-              label: Text("${cart.itemCount}"),
-              child: const Icon(Icons.shopping_bag_outlined),
+            icon: BlocBuilder<CartBloc, CartState>(
+              buildWhen: (previous, current) => previous.count != current.count,
+              builder: (context, cart) => Badge(
+                label: Text('${cart.count}'),
+                child: const Icon(Icons.shopping_bag_outlined),
+              ),
             ),
           ),
         ],
       ),
       body: IndexedStack(index: tab, children: screens),
       floatingActionButton: tab == 0
-          ? FloatingActionButton.extended(
-              tooltip: 'Open cart',
-              onPressed: openCart,
-              backgroundColor: Theme.of(context).colorScheme.primary,
-              foregroundColor: Theme.of(context).colorScheme.onPrimary,
-              shape: const StadiumBorder(),
-              icon: const Icon(Icons.shopping_bag_outlined),
-              label: Text('₸${formatPrice(cart.totalPrice)}'),
+          ? BlocBuilder<CartBloc, CartState>(
+              builder: (context, cart) => FloatingActionButton.extended(
+                tooltip: 'Open cart',
+                onPressed: openCart,
+                backgroundColor: Theme.of(context).colorScheme.primary,
+                foregroundColor: Theme.of(context).colorScheme.onPrimary,
+                shape: const StadiumBorder(),
+                icon: const Icon(Icons.shopping_bag_outlined),
+                label: Text('₸${formatPrice(cart.totalPrice)}'),
+              ),
             )
           : null,
       bottomNavigationBar: buildNavigationBar(

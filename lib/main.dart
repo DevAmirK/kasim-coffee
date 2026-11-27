@@ -1,6 +1,7 @@
 import 'dart:ui' show PointerDeviceKind;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,7 +11,7 @@ import 'models/user.dart';
 import 'screens/root_screen.dart';
 import 'providers/settings_provider.dart';
 
-import 'providers/cart_provider.dart';
+import 'blocs/cart_bloc.dart';
 
 import 'screens/login_screen.dart';
 import 'theme/app_theme.dart';
@@ -37,7 +38,7 @@ class KasimCoffeeApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => CartProvider()),
+        BlocProvider(create: (_) => CartBloc()),
         ChangeNotifierProvider.value(value: settings),
       ],
       child: Consumer<SettingsProvider>(

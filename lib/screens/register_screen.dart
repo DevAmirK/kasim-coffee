@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../blocs/auth_cubit.dart';
 import '../data/auth_store.dart';
 import '../models/user.dart';
 
@@ -100,12 +101,17 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         labelText: 'Email',
                         prefixIcon: Icon(Icons.email_outlined),
                       ),
-                      validator: (value) =>
-                          value == null ||
-                              !value.contains('@') ||
-                              !value.contains('.')
-                          ? 'Enter a valid email'
-                          : null,
+                      validator: (value) {
+                        final address = value?.trim() ?? '';
+                        if (!address.contains('@') || !address.contains('.')) {
+                          return 'Enter a valid email';
+                        }
+                        if (address == AuthCubit.student.email ||
+                            address == AuthCubit.demo.email) {
+                          return 'This email is reserved for demo sign-in';
+                        }
+                        return null;
+                      },
                     ),
                     const SizedBox(height: 12),
                     TextFormField(
